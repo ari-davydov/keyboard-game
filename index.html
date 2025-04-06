@@ -92,11 +92,11 @@
     // Initially show the Home section
     showSection("homeSection");
     
-    // Global dictionary variable (loaded from words.json)
+    // Global dictionary variable (loaded from words_dictionary.json)
     let dictionary = [];
     
-    // Load dictionary from words.json
-    fetch('words.json')
+    // Load dictionary from words_dictionary.json
+    fetch('words_dictionary.json')
       .then(response => response.json())
       .then(data => {
         dictionary = data;
