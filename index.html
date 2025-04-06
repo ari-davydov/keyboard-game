@@ -96,10 +96,13 @@
     let dictionary = [];
     
     // Load dictionary from words_dictionary.json
+    let dictionary = [];
+    let isDictionaryLoaded = false;
+    
     fetch('words_dictionary.json')
       .then(response => response.json())
       .then(data => {
-        dictionary = Object.keys(data);
+        dictionary = Object.keys(data); // 🔥 this turns the object into a word array
         isDictionaryLoaded = true;
         console.log("Dictionary loaded, total words:", dictionary.length);
       })
