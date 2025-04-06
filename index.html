@@ -99,7 +99,8 @@
     fetch('words_dictionary.json')
       .then(response => response.json())
       .then(data => {
-        dictionary = data;
+        dictionary = Object.keys(data);
+        isDictionaryLoaded = true;
         console.log("Dictionary loaded, total words:", dictionary.length);
       })
       .catch(error => console.error("Error loading dictionary:", error));
