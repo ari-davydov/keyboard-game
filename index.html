@@ -227,6 +227,10 @@
     }
     
     function startGame() {
+      if (dictionary.length === 0) {
+        alert("The dictionary hasn't loaded yet. Please wait a few seconds and try again.");
+        return;
+      }
       score = 0;
       startTime = Date.now();
       gameActive = true;
