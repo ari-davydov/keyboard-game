@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Perfect Pattern Game</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; }
+    #gameContainer, #gameOverContainer { display: none; }
+    button { padding: 10px 20px; font-size: 1em; }
+    input { padding: 5px; font-size: 1em; }
+  </style>
+</head>
+<body>
+  <h1>Perfect Pattern Game</h1>
+  
+  <!-- Start Screen -->
+  <div id="startContainer">
+    <p>Welcome to the game! You have 30 seconds to correctly characterize as many words as possible.</p>
+    <p>For each word, enter the pattern. You can use numbers or text (e.g., "321", "same", etc.).</p>
+    <button id="startButton">Start Game</button>
+  </div>
+  
+  <!-- Game Interface -->
+  <div id="gameContainer">
+    <div id="timer"></div>
+    <div id="score"></div>
+    <p>Word: <strong><span id="currentWord"></span></strong></p>
+    <input type="text" id="answerInput" placeholder="Enter pattern">
+    <button id="submitButton">Submit Answer</button>
+    <p id="feedback" style="color: green;"></p>
+    <p><strong>Pattern Key:</strong></p>
+    <ul>
+      <li>1 or ONE/ONE_LINE : ONE_LINE</li>
+      <li>2 or SAME         : SAME</li>
+      <li>3 or 321/123      : CONSECUTIVE_321</li>
+      <li>4 or 210/012      : CONSECUTIVE_210</li>
+      <li>5 or 432/234      : CONSECUTIVE_432</li>
+      <li>6 or DIAMOND      : DIAMOND</li>
+    </ul>
+  </div>
+  
+  <!-- Game Over Screen -->
+  <div id="gameOverContainer">
+    <h2>Game Over!</h2>
+    <p id="finalScore"></p>
+    <button id="restartButton">Restart Game</button>
+  </div>
+  
+  <script>
+    // A small sample dictionary. (You can expand this list as desired.)
+    const dictionary = ["typewriter", "ant", "juliana", "tar", "come", "alchemist"];
+    let score = 0;
+    let startTime;
+    let currentWord;
+    let gameInterval;
+    let gameActive = false;
+    const gameDuration = 30; // seconds
+
+    // Utility: Convert an uppercase letter to its circled Unicode form.
+    function circled(letter) {
+      return String.fromCodePoint(letter.charCodeAt(0) - 65 + 0x24B6);
+    }
+
+    // Count unique letters in each QWERTY row.
+    function countKeyboardLines(word) {
+      const row1 = "QWERTYUIOP";
+      const row2 = "ASDFGHJKL";
+      const row3 = "ZXCVBNM";
+      const unique = new Set(word.toUpperCase());
+      let count1 = 0, count2 = 0, count3 = 0;
+      unique.forEach(letter => {
+        if (row1.includes(letter)) count1++;
+        else if (row2.includes(letter)) count2++;
+        else if (row3.includes(letter)) count3++;
+      });
+      return { count1, count2, count3 };
+    }
+
+    // Determine the perfect pattern for a word.
+    function getPattern(word) {
+      const { count1, count2, count3 } = countKeyboardLines(word);
+      let extra = "";
+      let nonzero = 0;
+      if(count1 > 0) nonzero++;
+      if(count2 > 0) nonzero++;
+      if(count3 > 0) nonzero++;
+      if(nonzero === 1) return { pattern: "ONE_LINE", extra };
+      if(count1 === count2 && count2 === count3) return { pattern: "SAME", extra };
+      
+      let sorted = [count1, count2, count3].slice().sort((a, b) => a - b);
+      if(JSON.stringify(sorted) === JSON.stringify([1,2,3])) {
+        let pattern = "CONSECUTIVE_321";
+        if(count1 === 3 && count2 === 2 && count3 === 1) extra = "perfect 321!";
+        return { pattern, extra };
+      }
+      if(JSON.stringify(sorted) === JSON.stringify([0,1,2])) {
+        let pattern = "CONSECUTIVE_210";
+        if(count1 === 2 && count2 === 1 && count3 === 0) extra = "perfect 210!";
+        return { pattern, extra };
+      }
+      if(JSON.stringify(sorted) === JSON.stringify([2,3,4])) {
+        let pattern = "CONSECUTIVE_432";
+        if(count1 === 4 && count2 === 3 && count3 === 2) extra = "perfect 432!";
+        return { pattern, extra };
+      }
+      if(count1 === count3 && count2 !== count1) return { pattern: "DIAMOND", extra };
+      return { pattern: null, extra: "" };
+    }
+
+    // Create a keyboard diagram showing circled letters from each row.
+    function keyboardDiagram(word) {
+      const row1 = "QWERTYUIOP";
+      const row2 = "ASDFGHJKL";
+      const row3 = "ZXCVBNM";
+      const unique = new Set(word.toUpperCase());
+      let diag1 = [];
+      row1.split("").forEach(letter => { if(unique.has(letter)) diag1.push(circled(letter)); });
+      let diag2 = [];
+      row2.split("").forEach(letter => { if(unique.has(letter)) diag2.push(circled(letter)); });
+      let diag3 = [];
+      row3.split("").forEach(letter => { if(unique.has(letter)) diag3.push(circled(letter)); });
+      return { diag1: diag1.join(" "), diag2: diag2.join(" "), diag3: diag3.join(" ") };
+    }
+
+    // Allowed answer variations mapping.
+    const allowedAnswers = {
+      "1": "ONE_LINE",
+      "oneline": "ONE_LINE",
+      "one": "ONE_LINE",
+      "2": "SAME",
+      "same": "SAME",
+      "3": "CONSECUTIVE_321",
+      "321": "CONSECUTIVE_321",
+      "123": "CONSECUTIVE_321",
+      "consecutive321": "CONSECUTIVE_321",
+      "4": "CONSECUTIVE_210",
+      "210": "CONSECUTIVE_210",
+      "012": "CONSECUTIVE_210",
+      "consecutive210": "CONSECUTIVE_210",
+      "5": "CONSECUTIVE_432",
+      "432": "CONSECUTIVE_432",
+      "234": "CONSECUTIVE_432",
+      "consecutive432": "CONSECUTIVE_432",
+      "6": "DIAMOND",
+      "diamond": "DIAMOND"
+    };
+
+    function normalizeAnswer(ans) {
+      return allowedAnswers[ans.toLowerCase().replace(/\s|_/g, "")];
+    }
+
+    // Return a random word from the dictionary that produces a valid pattern.
+    function getRandomWord() {
+      const validWords = dictionary.filter(word => getPattern(word).pattern !== null);
+      return validWords[Math.floor(Math.random() * validWords.length)];
+    }
+
+    // Update score and current word displays.
+    function updateDisplay() {
+      document.getElementById("score").textContent = "Score: " + score;
+      document.getElementById("currentWord").textContent = currentWord;
+    }
+
+    // Update countdown timer display.
+    function updateTimer() {
+      const now = Date.now();
+      const elapsed = (now - startTime) / 1000;
+      const timeLeft = Math.max(0, gameDuration - Math.floor(elapsed));
+      document.getElementById("timer").textContent = "Time remaining: " + timeLeft + " seconds";
+      if(timeLeft <= 0) {
+        endGame();
+      }
+    }
+
+    // End the game, display final score.
+    function endGame() {
+      clearInterval(gameInterval);
+      gameActive = false;
+      document.getElementById("gameContainer").style.display = "none";
+      document.getElementById("gameOverContainer").style.display = "block";
+      document.getElementById("finalScore").textContent = "Your final score is " + score;
+    }
+
+    // Start the game: initialize variables and begin countdown.
+    function startGame() {
+      score = 0;
+      startTime = Date.now();
+      gameActive = true;
+      currentWord = getRandomWord();
+      updateDisplay();
+      document.getElementById("startContainer").style.display = "none";
+      document.getElementById("gameOverContainer").style.display = "none";
+      document.getElementById("gameContainer").style.display = "block";
+      gameInterval = setInterval(updateTimer, 1000);
+    }
+
+    // Event listener for the start button.
+    document.getElementById("startButton").addEventListener("click", startGame);
+
+    // Process answer submissions.
+    document.getElementById("submitButton").addEventListener("click", function() {
+      if(!gameActive) return;
+      const userInput = document.getElementById("answerInput").value;
+      const normalized = normalizeAnswer(userInput);
+      const correct = getPattern(currentWord).pattern;
+      if(normalized === correct) {
+        score++;
+        document.getElementById("feedback").textContent = "Correct! " + getPattern(currentWord).extra;
+        currentWord = getRandomWord();
+        updateDisplay();
+        document.getElementById("answerInput").value = "";
+      } else {
+        document.getElementById("feedback").textContent = "Wrong! The correct pattern was " + correct;
+        endGame();
+      }
+    });
+
+    // Restart the game.
+    document.getElementById("restartButton").addEventListener("click", function() {
+      location.reload();
+    });
+  </script>
+</body>
+</html>
