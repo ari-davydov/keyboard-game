@@ -102,16 +102,14 @@
     fetch('words_dictionary.json')
       .then(response => response.json())
       .then(data => {
-        dictionary = Object.keys(data); // 🔥 this turns the object into a word array
+        dictionary = Array.isArray(data) ? data : Object.keys(data);
         isDictionaryLoaded = true;
         console.log("Dictionary loaded, total words:", dictionary.length);
       })
-      .catch(error => console.error("Error loading dictionary:", error));
-    
-    // Utility: Convert an uppercase letter to its circled Unicode form.
-    function circled(letter) {
-      return String.fromCodePoint(letter.charCodeAt(0) - 65 + 0x24B6);
-    }
+      .catch(error => {
+        console.error("Error loading dictionary:", error);
+      });
+
     
     // Count unique letters in each QWERTY row.
     function countKeyboardLines(word) {
