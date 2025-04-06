@@ -1,0 +1,241 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta http-equiv="Content-Style-Type" content="text/css">
+  <title></title>
+  <meta name="Generator" content="Cocoa HTML Writer">
+  <meta name="CocoaVersion" content="2575.4">
+  <style type="text/css">
+    p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 11.0px Menlo; color: #000000}
+    p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 11.0px Menlo; color: #000000; min-height: 13.0px}
+    span.s1 {font-variant-ligatures: no-common-ligatures}
+  </style>
+</head>
+<body>
+<p class="p1"><span class="s1">&lt;!DOCTYPE html&gt;</span></p>
+<p class="p1"><span class="s1">&lt;html&gt;</span></p>
+<p class="p1"><span class="s1">&lt;head&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>&lt;meta charset="UTF-8"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>&lt;title&gt;Perfect Pattern Game&lt;/title&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>&lt;style&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>body { font-family: Arial, sans-serif; padding: 20px; }</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>#gameContainer, #gameOverContainer { display: none; }</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>button { padding: 10px 20px; font-size: 1em; }</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>input { padding: 5px; font-size: 1em; }</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>&lt;/style&gt;</span></p>
+<p class="p1"><span class="s1">&lt;/head&gt;</span></p>
+<p class="p1"><span class="s1">&lt;body&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>&lt;h1&gt;Perfect Pattern Game&lt;/h1&gt;</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">  </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>&lt;!-- Start Screen --&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>&lt;div id="startContainer"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;p&gt;Welcome to the game! You have 30 seconds to correctly characterize as many words as possible.&lt;/p&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;p&gt;For each word, enter the pattern. You can use numbers or text (e.g., "321", "same", etc.).&lt;/p&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;button id="startButton"&gt;Start Game&lt;/button&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>&lt;/div&gt;</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">  </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>&lt;!-- Game Interface --&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>&lt;div id="gameContainer"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;div id="timer"&gt;&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;div id="score"&gt;&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;p&gt;Word: &lt;strong&gt;&lt;span id="currentWord"&gt;&lt;/span&gt;&lt;/strong&gt;&lt;/p&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;input type="text" id="answerInput" placeholder="Enter pattern"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;button id="submitButton"&gt;Submit Answer&lt;/button&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;p id="feedback" style="color: green;"&gt;&lt;/p&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;p&gt;&lt;strong&gt;Pattern Key:&lt;/strong&gt;&lt;/p&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;ul&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>&lt;li&gt;1 or ONE/ONE_LINE : ONE_LINE&lt;/li&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>&lt;li&gt;2 or SAME <span class="Apple-converted-space">        </span>: SAME&lt;/li&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>&lt;li&gt;3 or 321/123<span class="Apple-converted-space">      </span>: CONSECUTIVE_321&lt;/li&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>&lt;li&gt;4 or 210/012<span class="Apple-converted-space">      </span>: CONSECUTIVE_210&lt;/li&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>&lt;li&gt;5 or 432/234<span class="Apple-converted-space">      </span>: CONSECUTIVE_432&lt;/li&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>&lt;li&gt;6 or DIAMOND<span class="Apple-converted-space">      </span>: DIAMOND&lt;/li&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;/ul&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>&lt;/div&gt;</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">  </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>&lt;!-- Game Over Screen --&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>&lt;div id="gameOverContainer"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;h2&gt;Game Over!&lt;/h2&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;p id="finalScore"&gt;&lt;/p&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;button id="restartButton"&gt;Restart Game&lt;/button&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>&lt;/div&gt;</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">  </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>&lt;script&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>// A small sample dictionary. (You can expand this list as desired.)</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const dictionary = ["typewriter", "ant", "juliana", "tar", "come", "alchemist"];</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>let score = 0;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>let startTime;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>let currentWord;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>let gameInterval;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>let gameActive = false;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const gameDuration = 30; // seconds</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>// Utility: Convert an uppercase letter to its circled Unicode form.</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>function circled(letter) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>return String.fromCodePoint(letter.charCodeAt(0) - 65 + 0x24B6);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>}</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>// Count unique letters in each QWERTY row.</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>function countKeyboardLines(word) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>const row1 = "QWERTYUIOP";</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>const row2 = "ASDFGHJKL";</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>const row3 = "ZXCVBNM";</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>const unique = new Set(word.toUpperCase());</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>let count1 = 0, count2 = 0, count3 = 0;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>unique.forEach(letter =&gt; {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>if (row1.includes(letter)) count1++;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>else if (row2.includes(letter)) count2++;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>else if (row3.includes(letter)) count3++;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>});</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>return { count1, count2, count3 };</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>}</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>// Determine the perfect pattern for a word.</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>function getPattern(word) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>const { count1, count2, count3 } = countKeyboardLines(word);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>let extra = "";</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>let nonzero = 0;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>if(count1 &gt; 0) nonzero++;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>if(count2 &gt; 0) nonzero++;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>if(count3 &gt; 0) nonzero++;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>if(nonzero === 1) return { pattern: "ONE_LINE", extra };</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>if(count1 === count2 &amp;&amp; count2 === count3) return { pattern: "SAME", extra };</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">      </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>let sorted = [count1, count2, count3].slice().sort((a, b) =&gt; a - b);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>if(JSON.stringify(sorted) === JSON.stringify([1,2,3])) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>let pattern = "CONSECUTIVE_321";</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>if(count1 === 3 &amp;&amp; count2 === 2 &amp;&amp; count3 === 1) extra = "perfect 321!";</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>return { pattern, extra };</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>}</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>if(JSON.stringify(sorted) === JSON.stringify([0,1,2])) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>let pattern = "CONSECUTIVE_210";</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>if(count1 === 2 &amp;&amp; count2 === 1 &amp;&amp; count3 === 0) extra = "perfect 210!";</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>return { pattern, extra };</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>}</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>if(JSON.stringify(sorted) === JSON.stringify([2,3,4])) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>let pattern = "CONSECUTIVE_432";</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>if(count1 === 4 &amp;&amp; count2 === 3 &amp;&amp; count3 === 2) extra = "perfect 432!";</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>return { pattern, extra };</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>}</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>if(count1 === count3 &amp;&amp; count2 !== count1) return { pattern: "DIAMOND", extra };</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>return { pattern: null, extra: "" };</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>}</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>// Create a keyboard diagram showing circled letters from each row.</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>function keyboardDiagram(word) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>const row1 = "QWERTYUIOP";</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>const row2 = "ASDFGHJKL";</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>const row3 = "ZXCVBNM";</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>const unique = new Set(word.toUpperCase());</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>let diag1 = [];</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>row1.split("").forEach(letter =&gt; { if(unique.has(letter)) diag1.push(circled(letter)); });</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>let diag2 = [];</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>row2.split("").forEach(letter =&gt; { if(unique.has(letter)) diag2.push(circled(letter)); });</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>let diag3 = [];</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>row3.split("").forEach(letter =&gt; { if(unique.has(letter)) diag3.push(circled(letter)); });</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>return { diag1: diag1.join(" "), diag2: diag2.join(" "), diag3: diag3.join(" ") };</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>}</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>// Allowed answer variations mapping.</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const allowedAnswers = {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>"1": "ONE_LINE",</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>"oneline": "ONE_LINE",</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>"one": "ONE_LINE",</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>"2": "SAME",</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>"same": "SAME",</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>"3": "CONSECUTIVE_321",</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>"321": "CONSECUTIVE_321",</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>"123": "CONSECUTIVE_321",</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>"consecutive321": "CONSECUTIVE_321",</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>"4": "CONSECUTIVE_210",</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>"210": "CONSECUTIVE_210",</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>"012": "CONSECUTIVE_210",</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>"consecutive210": "CONSECUTIVE_210",</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>"5": "CONSECUTIVE_432",</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>"432": "CONSECUTIVE_432",</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>"234": "CONSECUTIVE_432",</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>"consecutive432": "CONSECUTIVE_432",</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>"6": "DIAMOND",</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>"diamond": "DIAMOND"</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>};</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>function normalizeAnswer(ans) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>return allowedAnswers[ans.toLowerCase().replace(/\s|_/g, "")];</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>}</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>// Return a random word from the dictionary that produces a valid pattern.</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>function getRandomWord() {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>const validWords = dictionary.filter(word =&gt; getPattern(word).pattern !== null);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>return validWords[Math.floor(Math.random() * validWords.length)];</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>}</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>// Update score and current word displays.</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>function updateDisplay() {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>document.getElementById("score").textContent = "Score: " + score;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>document.getElementById("currentWord").textContent = currentWord;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>}</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>// Update countdown timer display.</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>function updateTimer() {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>const now = Date.now();</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>const elapsed = (now - startTime) / 1000;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>const timeLeft = Math.max(0, gameDuration - Math.floor(elapsed));</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>document.getElementById("timer").textContent = "Time remaining: " + timeLeft + " seconds";</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>if(timeLeft &lt;= 0) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>endGame();</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>}</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>}</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>// End the game, display final score.</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>function endGame() {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>clearInterval(gameInterval);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>gameActive = false;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>document.getElementById("gameContainer").style.display = "none";</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>document.getElementById("gameOverContainer").style.display = "block";</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>document.getElementById("finalScore").textContent = "Your final score is " + score;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>}</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>// Start the game: initialize variables and begin countdown.</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>function startGame() {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>score = 0;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>startTime = Date.now();</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>gameActive = true;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>currentWord = getRandomWord();</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>updateDisplay();</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>document.getElementById("startContainer").style.display = "none";</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>document.getElementById("gameOverContainer").style.display = "none";</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>document.getElementById("gameContainer").style.display = "block";</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>gameInterval = setInterval(updateTimer, 1000);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>}</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>// Event listener for the start button.</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>document.getElementById("startButton").addEventListener("click", startGame);</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>// Process answer submissions.</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>document.getElementById("submitButton").addEventListener("click", function() {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>if(!gameActive) return;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>const userInput = document.getElementById("answerInput").value;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>const normalized = normalizeAnswer(userInput);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>const correct = getPattern(currentWord).pattern;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>if(normalized === correct) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>score++;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>document.getElementById("feedback").textContent = "Correct! " + getPattern(currentWord).extra;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>currentWord = getRandomWord();</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>updateDisplay();</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>document.getElementById("answerInput").value = "";</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>} else {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>document.getElementById("feedback").textContent = "Wrong! The correct pattern was " + correct;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>endGame();</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>}</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>});</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>// Restart the game.</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>document.getElementById("restartButton").addEventListener("click", function() {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>location.reload();</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>});</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>&lt;/script&gt;</span></p>
+<p class="p1"><span class="s1">&lt;/body&gt;</span></p>
+<p class="p1"><span class="s1">&lt;/html&gt;</span></p>
+</body>
+</html>
