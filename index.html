@@ -2,65 +2,99 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>Perfect Pattern Game</title>
+  <title>Perfect Pattern Game & Analysis</title>
   <style>
     body { font-family: Arial, sans-serif; padding: 20px; }
-    #gameContainer, #gameOverContainer { display: none; }
+    .section { display: none; }
+    .active { display: block; }
+    nav a { margin-right: 15px; cursor: pointer; }
     button { padding: 10px 20px; font-size: 1em; }
     input { padding: 5px; font-size: 1em; }
   </style>
 </head>
 <body>
-  <h1>Perfect Pattern Game</h1>
+  <h1>Perfect Pattern App</h1>
+  <nav>
+    <a id="navGame">Game</a>
+    <a id="navAnalyze">Analyze Word</a>
+    <a id="navFind">Find Words</a>
+  </nav>
   
-  <!-- Start Screen -->
-  <div id="startContainer">
-    <p>Welcome to the game! You have 30 seconds to correctly characterize as many words as possible.</p>
-    <p>For each word, enter the pattern. You can use numbers or text (e.g., "321", "same", etc.).</p>
-    <button id="startButton">Start Game</button>
+  <!-- Game Section -->
+  <div id="gameSection" class="section">
+    <h2>Game Mode</h2>
+    <div id="gameStart">
+      <p>Welcome to the game! You have 30 seconds to correctly characterize as many words as possible.</p>
+      <p>Enter the pattern (e.g., "321", "same", etc.).</p>
+      <button id="startButton">Start Game</button>
+    </div>
+    <div id="gameContainer" style="display:none;">
+      <div id="timer"></div>
+      <div id="score"></div>
+      <p>Word: <strong><span id="currentWord"></span></strong></p>
+      <input type="text" id="answerInput" placeholder="Enter pattern">
+      <button id="submitButton">Submit Answer</button>
+      <p id="gameFeedback" style="color: green;"></p>
+      <p><strong>Pattern Key:</strong></p>
+      <ul>
+        <li>1 or ONE/ONE_LINE : ONE_LINE</li>
+        <li>2 or SAME         : SAME</li>
+        <li>3 or 321/123      : CONSECUTIVE_321</li>
+        <li>4 or 210/012      : CONSECUTIVE_210</li>
+        <li>5 or 432/234      : CONSECUTIVE_432</li>
+        <li>6 or DIAMOND      : DIAMOND</li>
+      </ul>
+    </div>
+    <div id="gameOver" style="display:none;">
+      <h2>Game Over!</h2>
+      <p id="finalScore"></p>
+      <button id="restartButton">Restart Game</button>
+    </div>
   </div>
   
-  <!-- Game Interface -->
-  <div id="gameContainer">
-    <div id="timer"></div>
-    <div id="score"></div>
-    <p>Word: <strong><span id="currentWord"></span></strong></p>
-    <input type="text" id="answerInput" placeholder="Enter pattern">
-    <button id="submitButton">Submit Answer</button>
-    <p id="feedback" style="color: green;"></p>
-    <p><strong>Pattern Key:</strong></p>
-    <ul>
-      <li>1 or ONE/ONE_LINE : ONE_LINE</li>
-      <li>2 or SAME         : SAME</li>
-      <li>3 or 321/123      : CONSECUTIVE_321</li>
-      <li>4 or 210/012      : CONSECUTIVE_210</li>
-      <li>5 or 432/234      : CONSECUTIVE_432</li>
-      <li>6 or DIAMOND      : DIAMOND</li>
-    </ul>
+  <!-- Analyze Section -->
+  <div id="analyzeSection" class="section">
+    <h2>Analyze a Word</h2>
+    <input type="text" id="analyzeInput" placeholder="Enter a word">
+    <button id="analyzeButton">Analyze</button>
+    <div id="analyzeResult"></div>
   </div>
   
-  <!-- Game Over Screen -->
-  <div id="gameOverContainer">
-    <h2>Game Over!</h2>
-    <p id="finalScore"></p>
-    <button id="restartButton">Restart Game</button>
+  <!-- Find Words Section -->
+  <div id="findSection" class="section">
+    <h2>Find Words by Pattern</h2>
+    <input type="text" id="findInput" placeholder="Enter a pattern (e.g., ONE_LINE)">
+    <button id="findButton">Find</button>
+    <ul id="findResult"></ul>
   </div>
   
   <script>
-    // A small sample dictionary. (You can expand this list as desired.)
-    const dictionary = ["typewriter", "ant", "juliana", "tar", "come", "alchemist"];
-    let score = 0;
-    let startTime;
-    let currentWord;
-    let gameInterval;
-    let gameActive = false;
-    const gameDuration = 30; // seconds
-
+    // Navigation: Show the selected section
+    function showSection(id) {
+      document.querySelectorAll('.section').forEach(sec => sec.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+    }
+    document.getElementById("navGame").addEventListener("click", () => showSection("gameSection"));
+    document.getElementById("navAnalyze").addEventListener("click", () => showSection("analyzeSection"));
+    document.getElementById("navFind").addEventListener("click", () => showSection("findSection"));
+    
+    // Global dictionary variable (loaded from words_dictionary.json)
+    let dictionary = [];
+    
+    // Load dictionary from words_dictionary.json
+    fetch('words_dictionary.json')
+      .then(response => response.json())
+      .then(data => {
+        dictionary = data;
+        console.log("Dictionary loaded, total words:", dictionary.length);
+      })
+      .catch(error => console.error("Error loading dictionary:", error));
+    
     // Utility: Convert an uppercase letter to its circled Unicode form.
     function circled(letter) {
       return String.fromCodePoint(letter.charCodeAt(0) - 65 + 0x24B6);
     }
-
+    
     // Count unique letters in each QWERTY row.
     function countKeyboardLines(word) {
       const row1 = "QWERTYUIOP";
@@ -75,53 +109,48 @@
       });
       return { count1, count2, count3 };
     }
-
+    
     // Determine the perfect pattern for a word.
     function getPattern(word) {
       const { count1, count2, count3 } = countKeyboardLines(word);
       let extra = "";
       let nonzero = 0;
-      if(count1 > 0) nonzero++;
-      if(count2 > 0) nonzero++;
-      if(count3 > 0) nonzero++;
-      if(nonzero === 1) return { pattern: "ONE_LINE", extra };
-      if(count1 === count2 && count2 === count3) return { pattern: "SAME", extra };
+      if (count1 > 0) nonzero++;
+      if (count2 > 0) nonzero++;
+      if (count3 > 0) nonzero++;
+      if (nonzero === 1) return { pattern: "ONE_LINE", extra };
+      if (count1 === count2 && count2 === count3) return { pattern: "SAME", extra };
       
       let sorted = [count1, count2, count3].slice().sort((a, b) => a - b);
-      if(JSON.stringify(sorted) === JSON.stringify([1,2,3])) {
+      if (JSON.stringify(sorted) === JSON.stringify([1,2,3])) {
         let pattern = "CONSECUTIVE_321";
-        if(count1 === 3 && count2 === 2 && count3 === 1) extra = "perfect 321!";
+        if (count1 === 3 && count2 === 2 && count3 === 1) extra = "perfect 321!";
         return { pattern, extra };
       }
-      if(JSON.stringify(sorted) === JSON.stringify([0,1,2])) {
+      if (JSON.stringify(sorted) === JSON.stringify([0,1,2])) {
         let pattern = "CONSECUTIVE_210";
-        if(count1 === 2 && count2 === 1 && count3 === 0) extra = "perfect 210!";
+        if (count1 === 2 && count2 === 1 && count3 === 0) extra = "perfect 210!";
         return { pattern, extra };
       }
-      if(JSON.stringify(sorted) === JSON.stringify([2,3,4])) {
+      if (JSON.stringify(sorted) === JSON.stringify([2,3,4])) {
         let pattern = "CONSECUTIVE_432";
-        if(count1 === 4 && count2 === 3 && count3 === 2) extra = "perfect 432!";
+        if (count1 === 4 && count2 === 3 && count3 === 2) extra = "perfect 432!";
         return { pattern, extra };
       }
-      if(count1 === count3 && count2 !== count1) return { pattern: "DIAMOND", extra };
+      if (count1 === count3 && count2 !== count1) return { pattern: "DIAMOND", extra };
       return { pattern: null, extra: "" };
     }
-
+    
     // Create a keyboard diagram showing circled letters from each row.
     function keyboardDiagram(word) {
-      const row1 = "QWERTYUIOP";
-      const row2 = "ASDFGHJKL";
-      const row3 = "ZXCVBNM";
+      const row1 = "QWERTYUIOP", row2 = "ASDFGHJKL", row3 = "ZXCVBNM";
       const unique = new Set(word.toUpperCase());
-      let diag1 = [];
-      row1.split("").forEach(letter => { if(unique.has(letter)) diag1.push(circled(letter)); });
-      let diag2 = [];
-      row2.split("").forEach(letter => { if(unique.has(letter)) diag2.push(circled(letter)); });
-      let diag3 = [];
-      row3.split("").forEach(letter => { if(unique.has(letter)) diag3.push(circled(letter)); });
-      return { diag1: diag1.join(" "), diag2: diag2.join(" "), diag3: diag3.join(" ") };
+      let diag1 = row1.split("").filter(letter => unique.has(letter)).map(circled).join(" ");
+      let diag2 = row2.split("").filter(letter => unique.has(letter)).map(circled).join(" ");
+      let diag3 = row3.split("").filter(letter => unique.has(letter)).map(circled).join(" ");
+      return { diag1, diag2, diag3 };
     }
-
+    
     // Allowed answer variations mapping.
     const allowedAnswers = {
       "1": "ONE_LINE",
@@ -144,81 +173,127 @@
       "6": "DIAMOND",
       "diamond": "DIAMOND"
     };
-
+    
     function normalizeAnswer(ans) {
       return allowedAnswers[ans.toLowerCase().replace(/\s|_/g, "")];
     }
-
+    
     // Return a random word from the dictionary that produces a valid pattern.
     function getRandomWord() {
       const validWords = dictionary.filter(word => getPattern(word).pattern !== null);
       return validWords[Math.floor(Math.random() * validWords.length)];
     }
-
-    // Update score and current word displays.
-    function updateDisplay() {
+    
+    // ------------- GAME MODE CODE -------------
+    let score = 0, startTime, gameInterval, gameActive = false;
+    const gameDuration = 30; // seconds
+    
+    function updateGameDisplay() {
       document.getElementById("score").textContent = "Score: " + score;
       document.getElementById("currentWord").textContent = currentWord;
     }
-
-    // Update countdown timer display.
+    
     function updateTimer() {
       const now = Date.now();
       const elapsed = (now - startTime) / 1000;
       const timeLeft = Math.max(0, gameDuration - Math.floor(elapsed));
       document.getElementById("timer").textContent = "Time remaining: " + timeLeft + " seconds";
-      if(timeLeft <= 0) {
+      if (timeLeft <= 0) {
         endGame();
       }
     }
-
-    // End the game, display final score.
+    
     function endGame() {
       clearInterval(gameInterval);
       gameActive = false;
       document.getElementById("gameContainer").style.display = "none";
-      document.getElementById("gameOverContainer").style.display = "block";
+      document.getElementById("gameOver").style.display = "block";
       document.getElementById("finalScore").textContent = "Your final score is " + score;
     }
-
-    // Start the game: initialize variables and begin countdown.
+    
+    let currentWord;
+    
     function startGame() {
       score = 0;
       startTime = Date.now();
       gameActive = true;
       currentWord = getRandomWord();
-      updateDisplay();
-      document.getElementById("startContainer").style.display = "none";
-      document.getElementById("gameOverContainer").style.display = "none";
+      updateGameDisplay();
+      document.getElementById("gameStart").style.display = "none";
+      document.getElementById("gameOver").style.display = "none";
       document.getElementById("gameContainer").style.display = "block";
       gameInterval = setInterval(updateTimer, 1000);
     }
-
-    // Event listener for the start button.
+    
     document.getElementById("startButton").addEventListener("click", startGame);
-
-    // Process answer submissions.
+    
     document.getElementById("submitButton").addEventListener("click", function() {
-      if(!gameActive) return;
+      if (!gameActive) return;
       const userInput = document.getElementById("answerInput").value;
       const normalized = normalizeAnswer(userInput);
       const correct = getPattern(currentWord).pattern;
-      if(normalized === correct) {
+      if (normalized === correct) {
         score++;
-        document.getElementById("feedback").textContent = "Correct! " + getPattern(currentWord).extra;
+        document.getElementById("gameFeedback").textContent = "Correct! " + getPattern(currentWord).extra;
         currentWord = getRandomWord();
-        updateDisplay();
+        updateGameDisplay();
         document.getElementById("answerInput").value = "";
       } else {
-        document.getElementById("feedback").textContent = "Wrong! The correct pattern was " + correct;
+        document.getElementById("gameFeedback").textContent = "Wrong! The correct pattern was " + correct;
         endGame();
       }
     });
-
-    // Restart the game.
+    
     document.getElementById("restartButton").addEventListener("click", function() {
       location.reload();
     });
+    
+    // ------------- ANALYZE MODE CODE -------------
+    document.getElementById("analyzeButton").addEventListener("click", function() {
+      const word = document.getElementById("analyzeInput").value;
+      const result = getPattern(word);
+      const diag = keyboardDiagram(word);
+      const output = `
+        <h3>Result for "${word}"</h3>
+        <p><strong>Keyboard Diagram:</strong></p>
+        <p>Line 1: ${diag.diag1}</p>
+        <p>Line 2: ${diag.diag2}</p>
+        <p>Line 3: ${diag.diag3}</p>
+        <p><strong>Pattern:</strong> ${result.pattern} ${result.extra ? "(" + result.extra + ")" : ""}</p>
+      `;
+      document.getElementById("analyzeResult").innerHTML = output;
+    });
+    
+    // ------------- FIND WORDS MODE CODE -------------
+    function findWordsByPattern(patternInput) {
+      const matches = dictionary.filter(word => getPattern(word).pattern === patternInput);
+      return matches;
+    }
+    
+    document.getElementById("findButton").addEventListener("click", function() {
+      const patternInput = document.getElementById("findInput").value.toUpperCase();
+      const matches = findWordsByPattern(patternInput);
+      let output = "";
+      if (matches.length === 0) {
+        output = "<li>No words found matching that pattern.</li>";
+      } else {
+        // Choose 5 random words from the matches
+        const selected = [];
+        while (selected.length < Math.min(5, matches.length)) {
+          const rand = matches[Math.floor(Math.random() * matches.length)];
+          if (!selected.includes(rand)) selected.push(rand);
+        }
+        selected.forEach(word => {
+          const diag = keyboardDiagram(word);
+          const pat = getPattern(word);
+          output += `<li title="Pattern: ${pat.pattern} ${pat.extra ? "(" + pat.extra + ")" : ""} | Diagram: L1: ${diag.diag1} L2: ${diag.diag2} L3: ${diag.diag3}">${word}</li>`;
+        });
+      }
+      document.getElementById("findResult").innerHTML = output;
+    });
+    
+    // Initially show the Game section (or you can choose another as default)
+    showSection("gameSection");
   </script>
 </body>
 </html>
