@@ -155,6 +155,11 @@
       if (count1 === count3 && count2 !== count1) return { pattern: "DIAMOND", extra };
       return { pattern: null, extra: "" };
     }
+
+    function circled(letter) {
+      return String.fromCodePoint(letter.charCodeAt(0) - 65 + 0x24B6);
+    }
+
     
     // Create a keyboard diagram showing circled letters from each row.
     function keyboardDiagram(word) {
