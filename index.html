@@ -239,6 +239,8 @@
     }
     
     // ------------- GAME MODE CODE -------------
+    let gameEndReason = "";
+    
     let score = 0, startTime, gameInterval, gameActive = false;
     const gameDuration = 30; // seconds
     let currentWord;
@@ -276,9 +278,6 @@
       
       let highScoreList = highScores.map(hs => `<li>${hs.score} points on ${hs.date}</li>`).join("");
       document.getElementById("highScores").innerHTML = `<h3>Top Scores</h3><ul>${highScoreList}</ul>`;
-
-
-      let gameEndReason = "";
 
     }
     
