@@ -2,14 +2,42 @@
 <html>
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
   <title>Keyboard Game</title>
   <style>
-    body { font-family: Arial, sans-serif; padding: 20px; }
-    .section { display: none; }
-    .active { display: block; }
-    nav a { margin-right: 15px; cursor: pointer; }
-    button { padding: 10px 20px; font-size: 1em; margin: 5px; }
-    input { padding: 5px; font-size: 1em; }
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      margin: 0;
+    }
+    
+    nav {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    
+    nav a {
+      font-size: 1.1em;
+    }
+    
+    button, input {
+      width: 100%;
+      max-width: 400px;
+      box-sizing: border-box;
+    }
+    
+    @media (min-width: 600px) {
+      nav {
+        flex-direction: row;
+      }
+    
+      button, input {
+        width: auto;
+      }
+    }
+
   </style>
 </head>
 <body>
@@ -31,6 +59,10 @@
     <button onclick="showSection('gameSection')">Play Game</button>
     <button onclick="showSection('analyzeSection')">Analyze a Word</button>
     <button onclick="showSection('findSection')">Find Words by Pattern</button>
+
+    <h2>Tutorial</h2>
+    <img src="tutorial.png" alt="Tutorial image" style="width: 100%; max-width: 500px; border: 1px solid #ccc; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+
   </div>
   
   <!-- Game Section -->
