@@ -79,7 +79,10 @@
     <div id="gameStart">
       <p>Welcome to the game! You have 30 seconds to correctly characterize as many words as possible.</p>
       <p>Enter the pattern (e.g., "321", "same", etc.).</p>
-      <button id="startButton">Start Game</button>
+     
+      <button onclick="startGame('pattern')">Start Pattern Game</button>
+      <button onclick="startGame('rowcount')">Start Row Count Game</button>
+      
     </div>
     <div id="gameContainer" style="display:none;">
       <div id="timer"></div>
@@ -330,11 +333,8 @@
 
     }
     
-    function startGame() {
-      if (dictionary.length === 0) {
-        alert("The dictionary hasn't loaded yet. Please wait a few seconds and try again.");
-        return;
-      }
+    function startGame(selectedMode = "pattern") {
+      mode = selectedMode;
       score = 0;
       startTime = Date.now();
       gameActive = true;
@@ -345,6 +345,7 @@
       document.getElementById("gameContainer").style.display = "block";
       gameInterval = setInterval(updateTimer, 1000);
     }
+
     
     document.getElementById("startButton").addEventListener("click", startGame);
     
