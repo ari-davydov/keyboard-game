@@ -290,6 +290,13 @@
     function updateGameDisplay() {
       document.getElementById("score").textContent = "Score: " + score;
       document.getElementById("currentWord").textContent = currentWord;
+
+      if (mode === "rowcount") {
+        document.getElementById("gameFeedback").textContent = "Type the row counts (e.g., 231)";
+      } else {
+        document.getElementById("gameFeedback").textContent = "Enter the pattern name (e.g., same, 321)";
+      }
+
     }
     
     function updateTimer() {
