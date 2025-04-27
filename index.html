@@ -77,9 +77,10 @@
   <div id="gameSection" class="section">
     <h2>Game Mode</h2>
     <div id="gameStart">
-      <p>Welcome to the game! You have 30 seconds to correctly characterize as many words as possible.</p>
-      <p>Enter the pattern (e.g., "321", "same", etc.).</p>
-      <button id="startButton">Start Game</button>
+      <p>Welcome to the game! You have 30 seconds to correctly answer as many prompts as possible.</p>
+      <p>Choose a mode:</p>
+      <button onclick="startGame('pattern')">Start Pattern Game</button>
+      <button onclick="startGame('rowcount')">Start Row Count Game</button>
     </div>
     <div id="gameContainer" style="display:none;">
       <div id="timer"></div>
@@ -153,6 +154,7 @@
   
   <script>
     let highScores = JSON.parse(localStorage.getItem("highScores") || "[]");
+    let mode = "pattern";  // "pattern" or "rowcount"
 
     // Navigation: Show the selected section
     function showSection(id) {
@@ -289,7 +291,14 @@
     function updateGameDisplay() {
       document.getElementById("score").textContent = "Score: " + score;
       document.getElementById("currentWord").textContent = currentWord;
+    
+      if (mode === "rowcount") {
+        document.getElementById("gameFeedback").textContent = "Type the number of unique letters in rows 1, 2, 3 (e.g., 231)";
+      } else {
+        document.getElementById("gameFeedback").textContent = "Enter the pattern (e.g., 321, same, diamond)";
+      }
     }
+
     
     function updateTimer() {
       const now = Date.now();
@@ -322,11 +331,8 @@
 
     }
     
-    function startGame() {
-      if (dictionary.length === 0) {
-        alert("The dictionary hasn't loaded yet. Please wait a few seconds and try again.");
-        return;
-      }
+    function startGame(selectedMode = "pattern") {
+      mode = selectedMode;
       score = 0;
       startTime = Date.now();
       gameActive = true;
@@ -335,27 +341,47 @@
       document.getElementById("gameStart").style.display = "none";
       document.getElementById("gameOver").style.display = "none";
       document.getElementById("gameContainer").style.display = "block";
+      document.getElementById("answerInput").value = "";
       gameInterval = setInterval(updateTimer, 1000);
     }
+
     
     document.getElementById("startButton").addEventListener("click", startGame);
     
-    document.getElementById("submitButton").addEventListener("click", function() {
+    document.getElementById("submitButton").addEventListener("click", function () {
       if (!gameActive) return;
-      const userInput = document.getElementById("answerInput").value;
-      const normalized = normalizeAnswer(userInput);
-      const correct = getPattern(currentWord).pattern;
-      if (normalized === correct) {
-        score++;
-        document.getElementById("gameFeedback").textContent = "Correct! " + getPattern(currentWord).extra;
-        currentWord = getRandomWord();
-        updateGameDisplay();
-        document.getElementById("answerInput").value = "";
+      const userInput = document.getElementById("answerInput").value.trim();
+    
+      if (mode === "rowcount") {
+        const { count1, count2, count3 } = countKeyboardLines(currentWord);
+        const expected = `${count1}${count2}${count3}`;
+        if (userInput === expected) {
+          score++;
+          document.getElementById("gameFeedback").textContent = "Correct!";
+          currentWord = getRandomWord();
+          updateGameDisplay();
+          document.getElementById("answerInput").value = "";
+        } else {
+          gameEndReason = `Wrong answer (expected ${expected})`;
+          endGame();
+        }
       } else {
-        document.getElementById("gameFeedback").textContent = "Wrong! The correct pattern was " + correct;
-        gameEndReason = "Wrong answer";
-        endGame();
+        const normalized = normalizeAnswer(userInput);
+        const correct = getPattern(currentWord).pattern;
+        if (normalized === correct) {
+          score++;
+          document.getElementById("gameFeedback").textContent = "Correct! " + getPattern(currentWord).extra;
+          currentWord = getRandomWord();
+          updateGameDisplay();
+          document.getElementById("answerInput").value = "";
+        } else {
+          document.getElementById("gameFeedback").textContent = "Wrong! The correct pattern was " + correct;
+          gameEndReason = "Wrong answer";
+          endGame();
+        }
       }
+    });
+
       
     });
     
