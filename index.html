@@ -153,6 +153,7 @@
   
   <script>
     let highScores = JSON.parse(localStorage.getItem("highScores") || "[]");
+    let mode = "pattern"; // or "rowcount"
 
     // Navigation: Show the selected section
     function showSection(id) {
