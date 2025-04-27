@@ -350,7 +350,38 @@
     
     document.getElementById("submitButton").addEventListener("click", function() {
       if (!gameActive) return;
-      const userInput = document.getElementById("answerInput").value;
+      const userInput = document.getElementById("answerInput").value.trim();
+      if (!gameActive) return;
+      
+      if (mode === "rowcount") {
+        const { count1, count2, count3 } = countKeyboardLines(currentWord);
+        const expected = `${count1}${count2}${count3}`;
+        if (userInput === expected) {
+          score++;
+          document.getElementById("gameFeedback").textContent = "Correct!";
+          currentWord = getRandomWord();
+          updateGameDisplay();
+          document.getElementById("answerInput").value = "";
+        } else {
+          gameEndReason = `Wrong answer (expected ${expected})`;
+          endGame();
+        }
+      } else {
+        const normalized = normalizeAnswer(userInput);
+        const correct = getPattern(currentWord).pattern;
+        if (normalized === correct) {
+          score++;
+          document.getElementById("gameFeedback").textContent = "Correct! " + getPattern(currentWord).extra;
+          currentWord = getRandomWord();
+          updateGameDisplay();
+          document.getElementById("answerInput").value = "";
+        } else {
+          document.getElementById("gameFeedback").textContent = "Wrong! The correct pattern was " + correct;
+          gameEndReason = "Wrong answer";
+          endGame();
+        }
+      }
+
       const normalized = normalizeAnswer(userInput);
       const correct = getPattern(currentWord).pattern;
       if (normalized === correct) {
